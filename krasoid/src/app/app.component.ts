@@ -23,19 +23,28 @@ export class AppComponent {
     //
     dbService.lessons.orderByChild('date').on('value', (l) => {
       const lessons = l.val();
-      dbService.lessonAttendees
-        .orderByKey()
-        .equalTo(l.key)
-        .once('value', (las) => {
-          const attendees = las.val();
-          console.log(las);
-          this.lessons = Object.keys(lessons).map((lk) => ({
-            key: lk,
-            ...lessons[lk],
-            attendees: attendees,
-          }));
-          console.log(this.lessons);
-        });
+      this.lessons = Object.keys(lessons).map((lk) => ({
+        key: lk,
+        ...lessons[lk],
+      }));
+      for (let lesson of this.lessons) {
+        lesson.attending = [];
+        Object.keys(lesson.attendance)
+          ?.reverse()
+          ?.forEach((key) => {
+            this.dbService.attendance
+              .child(key)
+              .once('value')
+              .then((s) => {
+                lesson.attending.push(s.val());
+                // this.lessons.find((l) => l.key === lesson.key).attendance = [
+                //   ...this.lessons.find((l) => l.key === lesson.key).attendance,
+                //   s.val(),
+                // ];
+              });
+          });
+      }
+      console.log(this.lessons);
     });
   }
 
@@ -46,35 +55,112 @@ export class AppComponent {
 
   removeClient(key) {
     console.log('removing client', key);
-    this.dbService.clients.child(key).remove();
+    // only soft delete!
+    // this.dbService.clients.child(key).remove();
   }
 
   updateClient(client, path, value) {
     console.log('updating client', client, path, value);
-    this.dbService.clients.child(client.key + '/' + path).set(value);
+    this.dbService.clients.child(client.key).child(path).set(value);
   }
 
   addLesson() {
     console.log('adding lesson');
-    this.dbService.lessons.push({ name: '', email: '' });
+    this.dbService.lessons.push({});
   }
 
-  removeLesson(key) {
+  async removeLesson(key) {
     console.log('removing lesson', key);
+    // or use rather count of keys in clients
+    if (
+      (
+        await this.dbService.attendance
+          .orderByChild('lesson')
+          .startAt(key)
+          .once('value')
+      ).val()
+    ) {
+      alert('attendees has to be removed first');
+      return;
+    }
     this.dbService.lessons.child(key).remove();
   }
 
   updateLesson(lesson, path, value) {
     console.log('updating lesson', lesson, path, value);
-    this.dbService.lessons.child(lesson.key + '/' + path).set(value);
+    this.dbService.lessons.child(lesson.key).child(path).set(value);
   }
 
-  addAttendee(key) {
+  async addAttendee(lessonId) {
     const clientId = prompt('Client id');
-    console.log('adding attendee', key, clientId);
-    this.dbService.lessonAttendees
-      .child(key)
+    console.log('adding attendee', lessonId, clientId);
+    // check for existing client
+    if (!(await this.dbService.clients.child(clientId).once('value')).val()) {
+      alert('client does not exist');
+      return;
+    }
+    // check for existing attendance
+    if (
+      (
+        await this.dbService.attendance
+          .orderByChild('lesson_client')
+          .startAt(`${lessonId}_${clientId}`)
+          .once('value')
+      ).val()
+    ) {
+      alert('already assigned');
+      return;
+    }
+    const attendanceKey = this.dbService.attendance.push({
+      lesson_client: `${lessonId}_${clientId}`,
+      client: clientId,
+      lesson: lessonId,
+      notes: '',
+    }).key;
+    this.dbService.clients
       .child(clientId)
-      .update({ attending: true, notes: '' });
+      .child('attendance')
+      .child(attendanceKey)
+      .set(true);
+    this.dbService.lessons
+      .child(lessonId)
+      .child('attendance')
+      .child(attendanceKey)
+      .set(true);
+  }
+
+  async removeAttendee(lessonId, clientId) {
+    console.log('removing attendee', lessonId, clientId);
+    // check for existing client
+    if (!(await this.dbService.clients.child(clientId).once('value')).val()) {
+      alert('client does not exist');
+      return;
+    }
+    // check for existing attendance
+    const attendanceKey = Object.keys(
+      (
+        await this.dbService.attendance
+          .orderByChild('lesson_client')
+          .startAt(`${lessonId}_${clientId}`)
+          .limitToFirst(1)
+          .once('value')
+      ).val()
+    )[0];
+    console.log(attendanceKey);
+    if (!attendanceKey) {
+      alert('attendance does not exist');
+      return;
+    }
+    this.dbService.attendance.child(attendanceKey).remove();
+    this.dbService.clients
+      .child(clientId)
+      .child('attendance')
+      .child(attendanceKey)
+      .remove();
+    this.dbService.lessons
+      .child(lessonId)
+      .child('attendance')
+      .child(attendanceKey)
+      .remove();
   }
 }

@@ -13,7 +13,7 @@
       [value]="client.email"
       (change)="updateClient(client, 'email', $event.target.value)"
     />
-    <button (click)="removeClient(client.key)">x</button>
+    <!-- <button (click)="removeClient(client.key)">x</button> -->
     <span>{{ client.key }}</span>
     <br />
   </li>
@@ -46,7 +46,12 @@
     <br />
     <h4>Attendees</h4>
     <ul>
-      <li *ngFor="let attendee of lesson.attendees"></li>
+      <li *ngFor="let attendee of lesson.attending">
+        {{ attendee.client }}
+        <button (click)="removeAttendee(attendee.lesson, attendee.client)">
+          x
+        </button>
+      </li>
     </ul>
     <br />
     <button (click)="addAttendee(lesson.key)">Add new Attendee</button>

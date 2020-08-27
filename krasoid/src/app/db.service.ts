@@ -3,7 +3,7 @@ import * as firebase from 'firebase';
 export class DbService {
   public readonly clients: firebase.database.Reference;
   public readonly lessons: firebase.database.Reference;
-  public readonly lessonAttendees: firebase.database.Reference;
+  public readonly attendance: firebase.database.Reference;
 
   protected readonly db: firebase.database.Database;
 
@@ -25,6 +25,6 @@ export class DbService {
     // Get reference to tables
     this.clients = this.db.ref().child('clients');
     this.lessons = this.db.ref().child('lessons');
-    this.lessonAttendees = this.db.ref().child('lessonAttendees');
+    this.attendance = this.db.ref().child('attendance');
   }
 }
