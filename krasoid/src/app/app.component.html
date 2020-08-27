@@ -1,0 +1,57 @@
+<h2>Clients</h2>
+<ol>
+  <li *ngFor="let client of clients">
+    <label>Name</label>
+    <input
+      type="text"
+      [value]="client.name"
+      (change)="updateClient(client, 'name', $event.target.value)"
+    />
+    <label>Email</label>
+    <input
+      type="text"
+      [value]="client.email"
+      (change)="updateClient(client, 'email', $event.target.value)"
+    />
+    <button (click)="removeClient(client.key)">x</button>
+    <span>{{ client.key }}</span>
+    <br />
+  </li>
+  <br />
+  <button (click)="addClient()">Add new Client</button>
+</ol>
+<h2>Lessons</h2>
+<ol>
+  <li *ngFor="let lesson of lessons">
+    <label>Date</label>
+    <input
+      type="date"
+      [value]="lesson.date"
+      (change)="updateLesson(lesson, 'date', $event.target.value)"
+    />
+    <label>Start</label>
+    <input
+      type="time"
+      [value]="lesson.start"
+      (change)="updateLesson(lesson, 'start', $event.target.value)"
+    />
+    <label>End</label>
+    <input
+      type="time"
+      [value]="lesson.end"
+      (change)="updateLesson(lesson, 'end', $event.target.value)"
+    />
+    <button (click)="removeLesson(lesson.key)">x</button>
+    <span>{{ lesson.key }}</span>
+    <br />
+    <h4>Attendees</h4>
+    <ul>
+      <li *ngFor="let attendee of lesson.attendees"></li>
+    </ul>
+    <br />
+    <button (click)="addAttendee(lesson.key)">Add new Attendee</button>
+    <br /><br />
+  </li>
+  <br />
+  <button (click)="addLesson()">Add new Lesson</button>
+</ol>
