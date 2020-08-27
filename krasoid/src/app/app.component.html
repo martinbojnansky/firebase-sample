@@ -1,4 +1,16 @@
-<h2>Clients</h2>
+<mat-toolbar color="primary">
+  <mat-icon aria-hidden="false" aria-label="Example home icon"
+    >euro_symbol</mat-icon
+  >
+  <nav>
+    <a mat-button routerLink="" routerLinkActive="mat-active"> Krasoid</a>
+    <a mat-button routerLink="lessons" routerLinkActive="mat-active">Lessons</a>
+    <a mat-button routerLink="clients" routerLinkActive="mat-active">Clients</a>
+  </nav>
+</mat-toolbar>
+<router-outlet></router-outlet>
+
+<!-- <h2>Clients</h2>
 <ol>
   <li *ngFor="let client of clients">
     <label>Name</label>
@@ -13,7 +25,7 @@
       [value]="client.email"
       (change)="updateClient(client, 'email', $event.target.value)"
     />
-    <!-- <button (click)="removeClient(client.key)">x</button> -->
+    <button (click)="removeClient(client.key)">x</button>
     <span>{{ client.key }}</span>
     <br />
   </li>
@@ -59,4 +71,4 @@
   </li>
   <br />
   <button (click)="addLesson()">Add new Lesson</button>
-</ol>
+</ol> -->

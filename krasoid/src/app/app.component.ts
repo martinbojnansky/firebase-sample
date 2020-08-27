@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DbService } from './db.service';
+import { DbService } from './services';
 
 @Component({
   selector: 'app-root',
@@ -66,7 +66,7 @@ export class AppComponent {
 
   addLesson() {
     console.log('adding lesson');
-    this.dbService.lessons.push({});
+    this.dbService.lessons.push({ date: '' });
   }
 
   async removeLesson(key) {
