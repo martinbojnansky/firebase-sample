@@ -1,10 +1,18 @@
 <h2>Clients</h2>
 <mat-accordion>
-  <mat-expansion-panel *ngFor="let client of clients">
+  <mat-expansion-panel *ngFor="let client of clients" (opened)="selectClient(client)">
     <mat-expansion-panel-header>
-      <mat-panel-title>{{ client.name }}</mat-panel-title>
-      <mat-panel-description>{{ client.email }}</mat-panel-description>
+      <mat-panel-title>{{ client?.name }}</mat-panel-title>
+      <mat-panel-description>{{ client?.email }}</mat-panel-description>
     </mat-expansion-panel-header>
-    <ng-template matExpansionPanelContent> Some deferred content </ng-template>
+    <ng-template matExpansionPanelContent>
+      <form [formGroup]="formGroup">
+        <input formControlName="name"/>
+        <input formControlName="email"/>
+      </form>
+    </ng-template>
   </mat-expansion-panel>
 </mat-accordion>
+<button mat-fab (click)="addClient()" aria-label="Add new Client">
+  <mat-icon>plus_one</mat-icon>
+</button>

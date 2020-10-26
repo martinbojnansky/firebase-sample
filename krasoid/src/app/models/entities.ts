@@ -7,8 +7,7 @@ export interface ManyToManyEntity extends Entity {
 }
 
 export interface Client extends Entity {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   attendance: Attendance[];
 }

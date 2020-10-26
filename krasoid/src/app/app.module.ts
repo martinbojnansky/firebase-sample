@@ -11,6 +11,7 @@ import {
   ClientsPageComponent,
 } from './pages';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { CommonModule } from '@angular/common';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatModule,
+    ReactiveFormsModule
   ],
   providers: [DbService],
   bootstrap: [AppComponent],

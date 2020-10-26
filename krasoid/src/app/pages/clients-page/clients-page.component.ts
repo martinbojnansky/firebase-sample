@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Client } from 'src/app/models';
 import { DbService } from 'src/app/services';
 
@@ -10,13 +11,22 @@ import { DbService } from 'src/app/services';
 export class ClientsPageComponent implements OnInit {
   clients: Client[];
 
-  constructor(protected db: DbService) {}
+  public readonly formGroup = this.formBuilder.group({
+    name: ['', {validators: Validators.minLength(5)}],
+    email: ['', { validators: [Validators.email]}]
+  }, {
+    updateOn: 'blur'
+  });
+
+
+  constructor(protected db: DbService, protected formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
-    this.updateClients();
+    this.loadClients();
+    this.formGroup.valueChanges()
   }
 
-  updateClients() {
+  loadClients() {
     this.db.clients.orderByChild('name').on('value', (c) => {
       const clients = c.val();
       this.clients = Object.keys(clients).map((ck) => ({
@@ -28,6 +38,10 @@ export class ClientsPageComponent implements OnInit {
 
   addClient() {
     this.db.clients.push({ firstName: '', lastName: '', email: '' });
+  }
+
+  selectClient(client: Client): void {
+    this.formGroup.patchValue(client);
   }
 
   updateClient(client: Client, path: string, value: any) {
